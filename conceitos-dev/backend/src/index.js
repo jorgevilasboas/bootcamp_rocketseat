@@ -1,24 +1,38 @@
 const express = require('express')
 const uuid = require('uuid')
 
-
 const app = express();
 app.use(express.json());
 const PORT = 3333
 
-/**
- * 
- * Query Params: Filtros e Paginação
- * const {title, owner} = request.query
- * 
- * Route Params:
- * Identificar na hora de atualizar
- * 
- *  * Request Body:
- * Conteúdo  {JSON}* 
- */
-
 const projects = [];
+
+function logRequests(req, res, next) {
+    const { method, url } = req
+
+    const logLabel = `[${method.toUpperCase()}] ${url}`
+
+    console.time(logLabel)
+
+    next()
+
+    console.timeEnd(logLabel)
+}
+
+function validateProjectId(req, res, next) {
+    const { id } = req.params
+
+    const projectIndex = projects.findIndex(project => project.id === id)
+    if (projectIndex < 0) {
+        return res.status(400).json({ message: "Invalid project ID." })
+    }
+
+    return next()
+
+}
+
+app.use(logRequests)
+app.use('/projects/:id', validateProjectId)
 
 app.get('/projects', (req, res) => {
     const { title } = req.query
@@ -68,6 +82,19 @@ app.delete('/projects/:id', (req, res) => {
 
 app.listen(PORT, () => {
     console.log(`💻👂🏻Server is listening port ${PORT} ...`)
+
+    /**
+ * 
+ * Query Params: Filtros e Paginação
+ * const {title, owner} = request.query
+ * 
+ * Route Params:
+ * Identificar na hora de atualizar
+ * 
+ *  * Request Body:
+ * Conteúdo  {JSON}* 
+ */
+
 })
 
 
