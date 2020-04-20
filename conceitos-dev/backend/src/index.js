@@ -1,8 +1,12 @@
 const express = require('express')
+const cors = require('cors')
 const uuid = require('uuid')
 
 const app = express();
+
+app.use(cors())
 app.use(express.json());
+
 const PORT = 3333
 
 const projects = [];
@@ -47,7 +51,7 @@ app.post('/projects', (req, res) => {
 
     projects.push(project)
 
-    return res.json(projects)
+    return res.json(project)
 })
 
 
